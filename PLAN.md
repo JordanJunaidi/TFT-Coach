@@ -12,12 +12,12 @@ Work through these in order. Each milestone ends with something working and demo
 
 ## Milestone 1: match data pipeline
 
-- [ ] Ingestion command that fetches the last 100+ matches, skips ones already stored, and handles 429 with backoff
-- [ ] Database schema: `matches` (incl. patch), `participants`, `traits`, `units` (with star level and items)
-- [ ] Patch lookup from match date (the API's `game_version` no longer contains the patch number)
-- [ ] ID-to-display-name mapping from static TFT data
-- [ ] Stats functions: games per comp, average placement, top-4 rate, all filterable by patch
-- [ ] Tests for parsing and stats using fixtures
+- [x] Ingestion command that fetches the last 100+ matches, skips ones already stored, and handles 429 with backoff
+- [x] Database schema: `matches` (incl. patch), `participants`, `traits`, `units` (with star level and items)
+- [x] Patch lookup from match date (the API's `game_version` no longer contains the patch number)
+- [x] ID-to-display-name mapping from static TFT data
+- [x] Stats functions: games per comp, average placement, top-4 rate, all filterable by patch
+- [x] Tests for parsing and stats using fixtures
 
 **Done when:** a CLI command prints "your top 5 comps last patch" with game count, average placement, and top-4 rate. Re-running ingestion makes zero duplicate API calls.
 
