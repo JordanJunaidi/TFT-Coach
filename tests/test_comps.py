@@ -9,6 +9,7 @@ from tftcoach.analysis.comps import (
     comp_label,
     find_carry,
     find_main_trait,
+    find_tank,
     offense_score,
     summarize_comps,
 )
@@ -131,3 +132,39 @@ def test_by_trait_splits_same_carry() -> None:
         CompKey("Zyra", main_trait="Executioner"),
     }
     assert all(s.usual_trait == s.comp.main_trait for s in stats)
+
+
+def test_tank_is_most_defensive_non_carry() -> None:
+    carry = BoardUnit("Carry", 2, 1, ("InfinityEdge", "Guinsoo", "Warmog"))
+    tank = BoardUnit("Tank", 2, 4, ("Warmog", "Stoneplate"))
+    bruiser = BoardUnit("Bruiser", 2, 3, ("Warmog", "InfinityEdge"))
+    units = [carry, tank, bruiser]
+
+    assert find_tank(units, RECIPES, carry=carry).character_id == "Tank"
+
+
+def test_no_tank_without_defensive_items() -> None:
+    carry = BoardUnit("Carry", 2, 1, ("InfinityEdge",))
+    units = [carry, BoardUnit("Other", 2, 1, ("Guinsoo",)), BoardUnit("Bare", 2, 1)]
+
+    assert find_tank(units, RECIPES, carry=carry) is None
+
+
+def test_usual_tank_is_most_common_across_games() -> None:
+    def tank_board(placement: int, tank: str) -> PlayerBoard:
+        return PlayerBoard(
+            "M",
+            "18.3",
+            placement,
+            units=[
+                BoardUnit("Draven", 2, 1, ("InfinityEdge", "Guinsoo")),
+                BoardUnit(tank, 2, 4, ("Warmog", "Stoneplate")),
+            ],
+        )
+
+    boards = [tank_board(2, "Maokai"), tank_board(5, "Amumu"), tank_board(3, "Maokai")]
+    [stats] = summarize_comps(boards, RECIPES)
+
+    assert stats.comp == CompKey("Draven")
+    assert stats.games == 3
+    assert stats.usual_tank == "Maokai"

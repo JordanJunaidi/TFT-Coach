@@ -1,11 +1,12 @@
 """Comp labeling and per-comp stats.
 
 The Riot API has no notion of a "comp", so one is derived from the final board. By
-default a comp is its carry ("Diana"); with `by_trait=True` it is "<main trait> <carry>"
-("Adaptor Diana"). Grouping by carry alone keeps samples usable: the main trait often
-varies between games on the same board, which split one player's 33 games on a patch into
-26 trait+carry comps. Labels are computed at query time, never stored, so the definition
-can change without re-ingesting.
+default a comp is its carry ("Diana"), reported with its usual tank and main trait; with
+`by_trait=True` it is "<main trait> <carry>" ("Adaptor Diana"). Grouping by carry alone
+keeps samples usable: the main trait and the tank often vary between games on the same
+board, which split one player's 33 games on a patch into 26 trait+carry comps (25 for
+carry+tank) versus 17 carries. Labels are computed at query time, never stored, so the
+definition can change without re-ingesting.
 """
 
 from collections import Counter
@@ -17,6 +18,8 @@ from dataclasses import dataclass, field
 # names have been stable across sets; matching on a substring tolerates set prefixes
 # like "DA_Component_".
 OFFENSIVE_COMPONENTS = ("BFSword", "RecurveBow", "NeedlesslyLargeRod", "TearOfTheGoddess")
+# Components that add armor, magic resist, or health; used to find the main tank.
+DEFENSIVE_COMPONENTS = ("ChainVest", "NegatronCloak", "GiantsBelt")
 
 
 @dataclass(frozen=True)
@@ -57,14 +60,15 @@ class CompStats:
     games: int
     avg_placement: float
     top4_rate: float
+    usual_tank: str | None  # most common main tank across the comp's games
     usual_trait: str | None  # most common main trait across the comp's games
 
 
 ItemComponents = Mapping[str, Sequence[str]]
 
 
-def offense_score(items: Sequence[str], components: ItemComponents) -> int:
-    """Count offensive components across a unit's items.
+def component_score(items: Sequence[str], components: ItemComponents, kinds: Sequence[str]) -> int:
+    """Count the components of the given kinds across a unit's items.
 
     An item missing from `components` (a bare component, or names not loaded yet) is
     scored as itself.
@@ -73,8 +77,16 @@ def offense_score(items: Sequence[str], components: ItemComponents) -> int:
         1
         for item in items
         for part in (components.get(item) or [item])
-        if any(name in part for name in OFFENSIVE_COMPONENTS)
+        if any(name in part for name in kinds)
     )
+
+
+def offense_score(items: Sequence[str], components: ItemComponents) -> int:
+    return component_score(items, components, OFFENSIVE_COMPONENTS)
+
+
+def defense_score(items: Sequence[str], components: ItemComponents) -> int:
+    return component_score(items, components, DEFENSIVE_COMPONENTS)
 
 
 def find_carry(units: list[BoardUnit], components: ItemComponents) -> BoardUnit | None:
@@ -87,6 +99,23 @@ def find_carry(units: list[BoardUnit], components: ItemComponents) -> BoardUnit 
     return max(
         units,
         key=lambda u: (offense_score(u.items, components), len(u.items), u.star_level, u.rarity),
+    )
+
+
+def find_tank(
+    units: list[BoardUnit], components: ItemComponents, carry: BoardUnit | None
+) -> BoardUnit | None:
+    """The non-carry unit with the most defensive item components, if any has one.
+
+    Ties go to more items, then higher star level, then higher cost. A board whose
+    frontline holds no defensive items has no tank.
+    """
+    candidates = [u for u in units if u is not carry and defense_score(u.items, components) > 0]
+    if not candidates:
+        return None
+    return max(
+        candidates,
+        key=lambda u: (defense_score(u.items, components), len(u.items), u.star_level, u.rarity),
     )
 
 
@@ -105,6 +134,11 @@ def find_main_trait(traits: list[BoardTrait]) -> BoardTrait | None:
 def main_trait_id(board: PlayerBoard) -> str | None:
     trait = find_main_trait(board.traits)
     return trait.trait_id if trait else None
+
+
+def tank_id(board: PlayerBoard, components: ItemComponents) -> str | None:
+    tank = find_tank(board.units, components, find_carry(board.units, components))
+    return tank.character_id if tank else None
 
 
 def comp_key(board: PlayerBoard, components: ItemComponents, by_trait: bool = False) -> CompKey:
@@ -140,6 +174,7 @@ def summarize_comps(
     stats = []
     for comp, games in groups.items():
         places = [b.placement for b in games]
+        tanks = Counter(t for b in games if (t := tank_id(b, components)) is not None)
         traits = Counter(t for b in games if (t := main_trait_id(b)) is not None)
         stats.append(
             CompStats(
@@ -147,6 +182,7 @@ def summarize_comps(
                 games=len(places),
                 avg_placement=sum(places) / len(places),
                 top4_rate=sum(1 for p in places if p <= 4) / len(places),
+                usual_tank=tanks.most_common(1)[0][0] if tanks else None,
                 usual_trait=traits.most_common(1)[0][0] if traits else None,
             )
         )

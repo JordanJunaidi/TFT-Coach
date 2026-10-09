@@ -53,13 +53,16 @@ def main(argv: list[str] | None = None) -> None:
         return
 
     header = "Comp" if args.by_trait else "Carry"
-    detail = "" if args.by_trait else f" {'Usual trait':<16}"
-    print(f"{header:<28}{detail} {'Games':>5} {'Avg place':>9} {'Top 4':>6}")
+    trait_header = "" if args.by_trait else f" {'Usual trait':<16}"
+    print(
+        f"{header:<24} {'Usual tank':<16}{trait_header} {'Games':>5} {'Avg place':>9} {'Top 4':>6}"
+    )
     for stats in summarize_comps(boards, components, by_trait=args.by_trait)[: args.limit]:
+        tank = display_name(stats.usual_tank, names) if stats.usual_tank else "-"
         trait = "" if args.by_trait else f" {display_name(stats.usual_trait, names):<16}"
         note = "  (small sample)" if stats.games < MIN_RELIABLE_GAMES else ""
         print(
-            f"{comp_label(stats.comp, names):<28}{trait} {stats.games:>5} "
+            f"{comp_label(stats.comp, names):<24} {tank:<16}{trait} {stats.games:>5} "
             f"{stats.avg_placement:>9.2f} {stats.top4_rate:>6.0%}{note}"
         )
 

@@ -39,10 +39,10 @@ uv run python -m tftcoach.analysis top-comps --riot-id "Name#TAG" --patch previo
 ```
 Top 5 comps for monk#monke, patch 18.3 (ranked, 33 games)
 
-Carry                        Usual trait      Games Avg place  Top 4
-Zyra                         Executioner          6      5.00    33%  (small sample)
-Draven                       Elderwood            5      5.60    20%  (small sample)
-Ashe                         Juggernaut           4      3.75    75%  (small sample)
+Carry                    Usual tank       Usual trait      Games Avg place  Top 4
+Zyra                     Malphite         Executioner          6      5.00    33%  (small sample)
+Draven                   Maokai           Elderwood            5      5.60    20%  (small sample)
+Ashe                     Maokai           Juggernaut           4      3.75    75%  (small sample)
 ...
 ```
 
@@ -50,11 +50,12 @@ Ashe                         Juggernaut           4      3.75    75%  (small sam
 
 **Patches.** Riot's `game_version` no longer contains the patch number, so each match's patch is the latest entry in `src/tftcoach/db/patches.csv` that started on or before the match's Pacific-time date.
 
-**Comps** are grouped by carry, with the most common main trait shown alongside. `--by-trait` splits them into "<main trait> <carry>" instead. Both are computed at query time:
+**Comps** are grouped by carry, with the most common tank and main trait shown alongside. `--by-trait` splits them into "<main trait> <carry>" instead. Both are computed at query time:
 - *carry*: the unit whose items contain the most offensive components (B.F. Sword, Recurve Bow, Rod, Tear), so an itemized tank isn't mistaken for the carry.
+- *tank*: the other unit whose items contain the most defensive components (Chain Vest, Negatron Cloak, Giant's Belt).
 - *main trait*: the active, non-unique trait with the most units.
 
-Grouping by carry is the default because the main trait varies between games on the same board: on real data, 33 games in one patch split into 26 trait+carry comps but 17 carries.
+Grouping by carry is the default because the tank and main trait vary between games on the same board: on real data, 33 games in one patch split into 26 trait+carry or 25 carry+tank groups, but only 17 carries.
 
 **Stats** (`--patch latest | previous | all | 18.3`) default to ranked games only. Comps with fewer than 10 games are marked as a small sample.
 

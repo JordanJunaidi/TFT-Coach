@@ -57,3 +57,8 @@ One short entry per notable decision: what, why, and what I'd revisit.
 
 **Decision:** Comps are grouped by carry alone, showing the most common main trait as a detail; `--by-trait` gives the "<main trait> <carry>" split.
 **Why:** On real data, trait+carry split 33 games in one patch into 26 comps, so nothing reached the 10-game threshold. The trait often changes between games on the same board (Zyra appeared as both "Executioner Zyra" and "Juggernaut Zyra"), which says more about the label than the strategy. Grouping by carry gave 17 groups on the same patch, with the largest at 6 games. That's still small, which is why the high-elo baseline in Milestone 4 matters.
+
+## 2026-10-09: Tank shown as a detail, not part of the comp key
+
+**Decision:** Each comp row shows its usual tank (the non-carry unit with the most defensive item components), but comps stay grouped by carry only.
+**Why:** Grouping by carry + tank split 33 games on one patch into 25 groups, nearly as many as trait + carry (26), because the same carry is played with different tanks (Draven with Maokai or Amumu). Showing the most common tank keeps that information without shrinking the sample sizes.
