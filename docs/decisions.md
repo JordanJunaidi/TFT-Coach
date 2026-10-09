@@ -62,3 +62,9 @@ One short entry per notable decision: what, why, and what I'd revisit.
 
 **Decision:** Each comp row shows its usual tank (the non-carry unit with the most defensive item components), but comps stay grouped by carry only.
 **Why:** Grouping by carry + tank split 33 games on one patch into 25 groups, nearly as many as trait + carry (26), because the same carry is played with different tanks (Draven with Maokai or Amumu). Showing the most common tank keeps that information without shrinking the sample sizes.
+
+## 2026-10-09: Gemini free tier for the LLM and embeddings, behind an OpenAI-compatible interface
+
+**Decision:** Use `gemini-3.8-flash` for chat/tool calling and `gemini-embedding-2` for embeddings, both through Gemini's OpenAI-compatible endpoint. Provider, key, and model names come from `LLM_BASE_URL`, `LLM_API_KEY`, `LLM_MODEL`, and `EMBEDDING_MODEL`.
+**Why:** The free tier needs no card and covers both tool calling and embeddings, so one key serves the whole LLM layer. Meta's Muse Spark (Contributor tier) was the first choice but requires billing setup. Because both providers speak the OpenAI Chat Completions format, switching is a `.env` change, not a code change. The model is pinned rather than `-latest` so eval results stay reproducible.
+**Trade-off:** On free/Contributor tiers the provider may use prompts for training. Tools therefore send only the user's aggregated stats and public patch notes, never other players' names or PUUIDs.
