@@ -4,9 +4,9 @@ Work through these in order. Each milestone ends with something working and demo
 
 ## Milestone 0: setup
 
-- [ ] Repo scaffold: `src/tftcoach/` package, `tests/`, `pyproject.toml`, `.gitignore` (include `.env`), `.env.example`, README stub, `docs/decisions.md`
-- [ ] Riot API client: Riot ID → PUUID → last 20 TFT match IDs → one match's details
-- [ ] Save one raw match JSON to `tests/fixtures/` for tests
+- [x] Repo scaffold: `src/tftcoach/` package, `tests/`, `pyproject.toml`, `.gitignore` (include `.env`), `.env.example`, README stub, `docs/decisions.md`
+- [x] Riot API client: Riot ID → PUUID → last 20 TFT match IDs → one match's details
+- [x] Save one raw match JSON to `tests/fixtures/` for tests
 
 **Done when:** `python -m tftcoach.riot --riot-id "Name#TAG"` prints 20 match IDs and saves one match JSON. API key is read from `.env` only.
 
