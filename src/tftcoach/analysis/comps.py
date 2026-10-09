@@ -1,10 +1,14 @@
 """Comp labeling and per-comp stats.
 
-The Riot API has no notion of a "comp", so one is derived from the final board as
-"<main trait> <carry>", e.g. "Adaptor Diana". The label is computed at query time, never
-stored, so the definition can change without re-ingesting.
+The Riot API has no notion of a "comp", so one is derived from the final board. By
+default a comp is its carry ("Diana"); with `by_trait=True` it is "<main trait> <carry>"
+("Adaptor Diana"). Grouping by carry alone keeps samples usable: the main trait often
+varies between games on the same board, which split one player's 33 games on a patch into
+26 trait+carry comps. Labels are computed at query time, never stored, so the definition
+can change without re-ingesting.
 """
 
+from collections import Counter
 from collections.abc import Mapping, Sequence
 from dataclasses import dataclass, field
 
@@ -43,8 +47,8 @@ class PlayerBoard:
 
 @dataclass(frozen=True)
 class CompKey:
-    main_trait: str | None
     carry: str | None
+    main_trait: str | None = None  # only set when grouping by trait
 
 
 @dataclass(frozen=True)
@@ -53,6 +57,7 @@ class CompStats:
     games: int
     avg_placement: float
     top4_rate: float
+    usual_trait: str | None  # most common main trait across the comp's games
 
 
 ItemComponents = Mapping[str, Sequence[str]]
@@ -97,12 +102,16 @@ def find_main_trait(traits: list[BoardTrait]) -> BoardTrait | None:
     return max(candidates, key=lambda t: (t.num_units, t.style))
 
 
-def comp_key(board: PlayerBoard, components: ItemComponents) -> CompKey:
-    carry = find_carry(board.units, components)
+def main_trait_id(board: PlayerBoard) -> str | None:
     trait = find_main_trait(board.traits)
+    return trait.trait_id if trait else None
+
+
+def comp_key(board: PlayerBoard, components: ItemComponents, by_trait: bool = False) -> CompKey:
+    carry = find_carry(board.units, components)
     return CompKey(
-        main_trait=trait.trait_id if trait else None,
         carry=carry.character_id if carry else None,
+        main_trait=main_trait_id(board) if by_trait else None,
     )
 
 
@@ -114,24 +123,31 @@ def display_name(api_name: str | None, names: dict[str, str]) -> str:
 
 
 def comp_label(comp: CompKey, names: dict[str, str]) -> str:
-    trait = display_name(comp.main_trait, names) if comp.main_trait else "No trait"
     carry = display_name(comp.carry, names) if comp.carry else "No carry"
-    return f"{trait} {carry}"
+    if comp.main_trait is None:
+        return carry
+    return f"{display_name(comp.main_trait, names)} {carry}"
 
 
-def summarize_comps(boards: list[PlayerBoard], components: ItemComponents) -> list[CompStats]:
+def summarize_comps(
+    boards: list[PlayerBoard], components: ItemComponents, by_trait: bool = False
+) -> list[CompStats]:
     """Games, average placement, and top-4 rate per comp, most-played first."""
-    placements: dict[CompKey, list[int]] = {}
+    groups: dict[CompKey, list[PlayerBoard]] = {}
     for board in boards:
-        placements.setdefault(comp_key(board, components), []).append(board.placement)
+        groups.setdefault(comp_key(board, components, by_trait), []).append(board)
 
-    stats = [
-        CompStats(
-            comp=comp,
-            games=len(places),
-            avg_placement=sum(places) / len(places),
-            top4_rate=sum(1 for p in places if p <= 4) / len(places),
+    stats = []
+    for comp, games in groups.items():
+        places = [b.placement for b in games]
+        traits = Counter(t for b in games if (t := main_trait_id(b)) is not None)
+        stats.append(
+            CompStats(
+                comp=comp,
+                games=len(places),
+                avg_placement=sum(places) / len(places),
+                top4_rate=sum(1 for p in places if p <= 4) / len(places),
+                usual_trait=traits.most_common(1)[0][0] if traits else None,
+            )
         )
-        for comp, places in placements.items()
-    ]
     return sorted(stats, key=lambda s: (-s.games, s.avg_placement))

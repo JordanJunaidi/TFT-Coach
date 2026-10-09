@@ -77,13 +77,14 @@ def test_main_trait_ties_break_on_style() -> None:
 
 
 def test_empty_board_has_no_carry_or_trait() -> None:
-    assert comp_key(PlayerBoard("M", None, 8), {}) == CompKey(None, None)
+    assert comp_key(PlayerBoard("M", None, 8), {}) == CompKey(carry=None)
 
 
 def test_label_uses_display_names_with_fallback() -> None:
     names = {"DA_18_Adaptor": "Adaptor"}
-    assert comp_label(CompKey("DA_18_Adaptor", "DA_18_Diana"), names) == "Adaptor Diana"
-    assert comp_label(CompKey(None, None), names) == "No trait No carry"
+    assert comp_label(CompKey("DA_18_Diana"), names) == "Diana"
+    assert comp_label(CompKey("DA_18_Diana", "DA_18_Adaptor"), names) == "Adaptor Diana"
+    assert comp_label(CompKey(None), names) == "No carry"
 
 
 def test_summarize_comps_computes_stats_per_comp() -> None:
@@ -95,7 +96,7 @@ def test_summarize_comps_computes_stats_per_comp() -> None:
     ]
     stats = summarize_comps(boards, {})
 
-    assert [s.comp for s in stats] == [CompKey("Adaptor", "Diana"), CompKey("Sniper", "Jinx")]
+    assert [s.comp for s in stats] == [CompKey("Diana"), CompKey("Jinx")]
     top = stats[0]
     assert top.games == 3
     assert top.avg_placement == pytest.approx(11 / 3)
@@ -106,3 +107,27 @@ def test_summarize_comps_computes_stats_per_comp() -> None:
 def test_summarize_breaks_game_count_ties_by_placement() -> None:
     stats = summarize_comps([board(7, "Jinx", "Sniper"), board(2, "Diana", "Adaptor")], {})
     assert stats[0].comp.carry == "Diana"
+
+
+def test_default_groups_same_carry_across_traits() -> None:
+    boards = [
+        board(2, "Zyra", "Juggernaut"),
+        board(3, "Zyra", "Executioner"),
+        board(6, "Zyra", "Executioner"),
+    ]
+    [stats] = summarize_comps(boards, {})
+
+    assert stats.comp == CompKey("Zyra")
+    assert stats.games == 3
+    assert stats.usual_trait == "Executioner"
+
+
+def test_by_trait_splits_same_carry() -> None:
+    boards = [board(2, "Zyra", "Juggernaut"), board(3, "Zyra", "Executioner")]
+    stats = summarize_comps(boards, {}, by_trait=True)
+
+    assert {s.comp for s in stats} == {
+        CompKey("Zyra", main_trait="Juggernaut"),
+        CompKey("Zyra", main_trait="Executioner"),
+    }
+    assert all(s.usual_trait == s.comp.main_trait for s in stats)

@@ -52,3 +52,8 @@ One short entry per notable decision: what, why, and what I'd revisit.
 
 **Decision:** SQL loads a player's boards; comp labeling and aggregation are plain Python functions over dataclasses.
 **Why:** The logic that matters (who is the carry, how stats are computed) is unit-tested with hand-built boards and no database. A small set of integration tests covers the SQL against a real `tftcoach_test` database.
+
+## 2026-10-09: Group comps by carry by default
+
+**Decision:** Comps are grouped by carry alone, showing the most common main trait as a detail; `--by-trait` gives the "<main trait> <carry>" split.
+**Why:** On real data, trait+carry split 33 games in one patch into 26 comps, so nothing reached the 10-game threshold. The trait often changes between games on the same board (Zyra appeared as both "Executioner Zyra" and "Juggernaut Zyra"), which says more about the label than the strategy. Grouping by carry gave 17 groups on the same patch, with the largest at 6 games. That's still small, which is why the high-elo baseline in Milestone 4 matters.

@@ -5,7 +5,7 @@ Usage: python -m tftcoach.analysis top-comps --riot-id "Name#TAG" [--patch lates
 
 import argparse
 
-from tftcoach.analysis.comps import comp_label, summarize_comps
+from tftcoach.analysis.comps import comp_label, display_name, summarize_comps
 from tftcoach.analysis.queries import (
     LATEST_PATCH,
     load_boards,
@@ -31,6 +31,9 @@ def main(argv: list[str] | None = None) -> None:
     )
     parser.add_argument("--limit", type=int, default=5)
     parser.add_argument("--include-normals", action="store_true", help="include non-ranked games")
+    parser.add_argument(
+        "--by-trait", action="store_true", help="split comps by main trait as well as carry"
+    )
     args = parser.parse_args(argv)
 
     game_name, tag_line = parse_riot_id(args.riot_id)
@@ -49,11 +52,14 @@ def main(argv: list[str] | None = None) -> None:
         print("No games found.")
         return
 
-    print(f"{'Comp':<32} {'Games':>5} {'Avg place':>9} {'Top 4':>6}")
-    for stats in summarize_comps(boards, components)[: args.limit]:
+    header = "Comp" if args.by_trait else "Carry"
+    detail = "" if args.by_trait else f" {'Usual trait':<16}"
+    print(f"{header:<28}{detail} {'Games':>5} {'Avg place':>9} {'Top 4':>6}")
+    for stats in summarize_comps(boards, components, by_trait=args.by_trait)[: args.limit]:
+        trait = "" if args.by_trait else f" {display_name(stats.usual_trait, names):<16}"
         note = "  (small sample)" if stats.games < MIN_RELIABLE_GAMES else ""
         print(
-            f"{comp_label(stats.comp, names):<32} {stats.games:>5} "
+            f"{comp_label(stats.comp, names):<28}{trait} {stats.games:>5} "
             f"{stats.avg_placement:>9.2f} {stats.top4_rate:>6.0%}{note}"
         )
 
