@@ -21,3 +21,8 @@ One short entry per notable decision: what, why, and what I'd revisit.
 
 **Decision:** Basic 429 retry (up to 3 times, honoring `Retry-After`) lives in the client from Milestone 0, ahead of the full caching work in Milestone 1.
 **Why:** Development keys allow 100 requests per 2 minutes, so even ad hoc runs can hit the limit. Putting it at the lowest layer means every caller gets it.
+
+## 2026-10-09: No augment data
+
+**Decision:** Drop augments from the schema and analysis. Derive each match's patch from its date.
+**Why:** Riot removed augments from match history starting with Set 13 to curb augment stat sites. Set 18 match payloads confirm the field is absent. Third-party sites appear to collect augments through client-side apps, which conflicts with this project's between-games-only rule, and manual logging wasn't worth the friction. `game_version` is also blank (`"?.?.?.?"`), so the patch is looked up from `game_datetime` against patch release dates. Augment changes still reach the coach through patch notes (Milestones 2–3).

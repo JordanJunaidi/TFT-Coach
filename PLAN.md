@@ -13,7 +13,8 @@ Work through these in order. Each milestone ends with something working and demo
 ## Milestone 1: match data pipeline
 
 - [ ] Ingestion command that fetches the last 100+ matches, skips ones already stored, and handles 429 with backoff
-- [ ] Database schema: `matches` (incl. game version/patch), `participants`, `traits`, `units` (with star level and items), `augments`
+- [ ] Database schema: `matches` (incl. patch), `participants`, `traits`, `units` (with star level and items)
+- [ ] Patch lookup from match date (the API's `game_version` no longer contains the patch number)
 - [ ] ID-to-display-name mapping from static TFT data
 - [ ] Stats functions: games per comp, average placement, top-4 rate, all filterable by patch
 - [ ] Tests for parsing and stats using fixtures
@@ -41,7 +42,7 @@ Work through these in order. Each milestone ends with something working and demo
 ## Milestone 4: "why isn't this working" analysis
 
 - [ ] Ingest high-elo matches (Challenger/Grandmaster ladder → recent matches) as a baseline, within rate limits
-- [ ] For a comp: compare me vs. baseline on carry items, star levels, level at elimination, round eliminated, gold left, augments
+- [ ] For a comp: compare me vs. baseline on carry items, star levels, level at elimination, round eliminated, gold left, damage dealt, and how contested the comp was in the lobby
 - [ ] Compare my own top-4 vs. bottom-4 games on the same comp
 - [ ] Sample-size guard: fewer than ~10 games → "not enough data yet"
 - [ ] Add `compare_comp(comp, patch)` tool to the agent
