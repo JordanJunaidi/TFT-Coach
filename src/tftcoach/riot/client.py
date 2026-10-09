@@ -6,6 +6,8 @@ from typing import Any
 
 import httpx
 
+from tftcoach.riot.ratelimit import RateLimiter
+
 DEFAULT_TIMEOUT = 10.0
 MAX_RETRIES = 3
 DEFAULT_RETRY_AFTER = 1.0
@@ -31,7 +33,7 @@ def parse_riot_id(riot_id: str) -> tuple[str, str]:
 
 
 class RiotClient:
-    """Wraps a single httpx.Client with auth, regional routing, and 429 backoff."""
+    """Wraps a single httpx.Client with auth, regional routing, rate limiting, and 429 backoff."""
 
     def __init__(
         self,
@@ -40,6 +42,7 @@ class RiotClient:
         *,
         transport: httpx.BaseTransport | None = None,
         sleep: Callable[[float], None] = time.sleep,
+        rate_limiter: RateLimiter | None = None,
     ) -> None:
         self._http = httpx.Client(
             base_url=f"https://{region}.api.riotgames.com",
@@ -48,6 +51,8 @@ class RiotClient:
             transport=transport,
         )
         self._sleep = sleep
+        self._rate_limiter = rate_limiter or RateLimiter()
+        self.request_count = 0
 
     def __enter__(self) -> "RiotClient":
         return self
@@ -60,6 +65,8 @@ class RiotClient:
 
     def _get(self, path: str, params: dict[str, Any] | None = None) -> Any:
         for attempt in range(MAX_RETRIES + 1):
+            self._rate_limiter.acquire()
+            self.request_count += 1
             response = self._http.get(path, params=params)
             if response.status_code == 429 and attempt < MAX_RETRIES:
                 retry_after = response.headers.get("Retry-After")
