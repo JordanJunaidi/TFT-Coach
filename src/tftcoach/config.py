@@ -12,6 +12,7 @@ class Settings(BaseSettings):
     # SecretStr masks the value in repr/str so the key can't leak through logs or tracebacks.
     riot_api_key: SecretStr
     riot_region: str = "americas"
+    database_url: str = "postgresql://localhost/tftcoach"
 
 
 @lru_cache

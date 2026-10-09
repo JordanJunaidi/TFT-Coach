@@ -1,0 +1,602 @@
+{
+ "items": [
+  {
+   "apiName": "DA_RedBuff",
+   "name": "Red Buff",
+   "composition": [
+    "DA_Component_RecurveBow",
+    "DA_Component_RecurveBow"
+   ]
+  },
+  {
+   "apiName": "DA_Evenshroud",
+   "name": "Evenshroud",
+   "composition": [
+    "DA_Component_NegatronCloak",
+    "DA_Component_GiantsBelt"
+   ]
+  },
+  {
+   "apiName": "DA_SpearOfShojin",
+   "name": "Spear of Shojin",
+   "composition": [
+    "DA_Component_TearOfTheGoddess",
+    "DA_Component_BFSword"
+   ]
+  },
+  {
+   "apiName": "DA_GargoyleStoneplate",
+   "name": "Gargoyle Stoneplate",
+   "composition": [
+    "DA_Component_ChainVest",
+    "DA_Component_NegatronCloak"
+   ]
+  },
+  {
+   "apiName": "DA_NashorsTooth",
+   "name": "Nashor's Tooth",
+   "composition": [
+    "DA_Component_RecurveBow",
+    "DA_Component_GiantsBelt"
+   ]
+  },
+  {
+   "apiName": "DA_ThiefsGloves",
+   "name": "Thief's Gloves",
+   "composition": [
+    "DA_Component_SparringGloves",
+    "DA_Component_SparringGloves"
+   ]
+  },
+  {
+   "apiName": "DA_InfinityEdge",
+   "name": "Infinity Edge",
+   "composition": [
+    "DA_Component_BFSword",
+    "DA_Component_SparringGloves"
+   ]
+  },
+  {
+   "apiName": "DA_Artifact_LudensTempest",
+   "name": "Luden's Tempest"
+  },
+  {
+   "apiName": "DA_Morellonomicon",
+   "name": "Morellonomicon",
+   "composition": [
+    "DA_Component_GiantsBelt",
+    "DA_Component_NeedlesslyLargeRod"
+   ]
+  },
+  {
+   "apiName": "DA_18_EmblemPrimal",
+   "name": "Primal Emblem",
+   "composition": [
+    "DA_Component_Spatula",
+    "DA_Component_SparringGloves"
+   ]
+  },
+  {
+   "apiName": "DA_ProtectorsVow",
+   "name": "Protector's Vow",
+   "composition": [
+    "DA_Component_ChainVest",
+    "DA_Component_TearOfTheGoddess"
+   ]
+  },
+  {
+   "apiName": "DA_Component_BFSword",
+   "name": "B.F. Sword"
+  },
+  {
+   "apiName": "DA_WarmogsArmor",
+   "name": "Warmog's Armor",
+   "composition": [
+    "DA_Component_GiantsBelt",
+    "DA_Component_GiantsBelt"
+   ]
+  },
+  {
+   "apiName": "DA_Artifact_LichBane",
+   "name": "Lich Bane"
+  },
+  {
+   "apiName": "DA_VoidStaff",
+   "name": "Void Staff",
+   "composition": [
+    "DA_Component_RecurveBow",
+    "DA_Component_TearOfTheGoddess"
+   ]
+  },
+  {
+   "apiName": "DA_18_EmblemDefender",
+   "name": "Defender Emblem"
+  },
+  {
+   "apiName": "DA_DragonsClaw",
+   "name": "Dragon's Claw",
+   "composition": [
+    "DA_Component_NegatronCloak",
+    "DA_Component_NegatronCloak"
+   ]
+  },
+  {
+   "apiName": "DA_SpiritVisage",
+   "name": "Spirit Visage",
+   "composition": [
+    "DA_Component_GiantsBelt",
+    "DA_Component_TearOfTheGoddess"
+   ]
+  },
+  {
+   "apiName": "DA_EdgeOfNight",
+   "name": "Edge of Night",
+   "composition": [
+    "DA_Component_BFSword",
+    "DA_Component_ChainVest"
+   ]
+  },
+  {
+   "apiName": "DA_18_EmblemInvoker",
+   "name": "Invoker Emblem",
+   "composition": [
+    "DA_Component_FryingPan",
+    "DA_Component_TearOfTheGoddess"
+   ]
+  },
+  {
+   "apiName": "DA_Component_GiantsBelt",
+   "name": "Giant's Belt"
+  },
+  {
+   "apiName": "DA_18_EmblemBrawler",
+   "name": "Brawler Emblem",
+   "composition": [
+    "DA_Component_FryingPan",
+    "DA_Component_GiantsBelt"
+   ]
+  },
+  {
+   "apiName": "DA_HextechGunblade",
+   "name": "Hextech Gunblade",
+   "composition": [
+    "DA_Component_BFSword",
+    "DA_Component_NeedlesslyLargeRod"
+   ]
+  },
+  {
+   "apiName": "DA_HandOfJustice",
+   "name": "Hand Of Justice",
+   "composition": [
+    "DA_Component_TearOfTheGoddess",
+    "DA_Component_SparringGloves"
+   ]
+  },
+  {
+   "apiName": "DA_18_EmblemExecutioner",
+   "name": "Executioner Emblem",
+   "composition": [
+    "DA_Component_FryingPan",
+    "DA_Component_SparringGloves"
+   ]
+  },
+  {
+   "apiName": "DA_StrikersFlail",
+   "name": "Striker's Flail",
+   "composition": [
+    "DA_Component_GiantsBelt",
+    "DA_Component_SparringGloves"
+   ]
+  },
+  {
+   "apiName": "DA_SteadfastHeart",
+   "name": "Steadfast Heart",
+   "composition": [
+    "DA_Component_ChainVest",
+    "DA_Component_SparringGloves"
+   ]
+  },
+  {
+   "apiName": "DA_GuinsoosRageblade",
+   "name": "Guinsoo's Rageblade",
+   "composition": [
+    "DA_Component_RecurveBow",
+    "DA_Component_NeedlesslyLargeRod"
+   ]
+  },
+  {
+   "apiName": "DA_IonicSpark",
+   "name": "Ionic Spark",
+   "composition": [
+    "DA_Component_NeedlesslyLargeRod",
+    "DA_Component_NegatronCloak"
+   ]
+  },
+  {
+   "apiName": "DA_RabadonsDeathcap",
+   "name": "Rabadon's Deathcap",
+   "composition": [
+    "DA_Component_NeedlesslyLargeRod",
+    "DA_Component_NeedlesslyLargeRod"
+   ]
+  },
+  {
+   "apiName": "DA_18_EmblemElderwood",
+   "name": "Elderwood Emblem",
+   "composition": [
+    "DA_Component_Spatula",
+    "DA_Component_ChainVest"
+   ]
+  },
+  {
+   "apiName": "DA_TacticiansCrown",
+   "name": "Tacticians Crown",
+   "composition": [
+    "DA_Component_Spatula",
+    "DA_Component_Spatula"
+   ]
+  },
+  {
+   "apiName": "DA_LastWhisper",
+   "name": "Last Whisper",
+   "composition": [
+    "DA_Component_RecurveBow",
+    "DA_Component_SparringGloves"
+   ]
+  },
+  {
+   "apiName": "DA_Crownguard",
+   "name": "Crownguard",
+   "composition": [
+    "DA_Component_NeedlesslyLargeRod",
+    "DA_Component_ChainVest"
+   ]
+  },
+  {
+   "apiName": "DA_SteraksGage",
+   "name": "Sterak's Gage",
+   "composition": [
+    "DA_Component_BFSword",
+    "DA_Component_GiantsBelt"
+   ]
+  },
+  {
+   "apiName": "DA_SunfireCape",
+   "name": "Sunfire Cape",
+   "composition": [
+    "DA_Component_ChainVest",
+    "DA_Component_GiantsBelt"
+   ]
+  },
+  {
+   "apiName": "DA_ArchangelsStaff",
+   "name": "Archangel's Staff",
+   "composition": [
+    "DA_Component_NeedlesslyLargeRod",
+    "DA_Component_TearOfTheGoddess"
+   ]
+  },
+  {
+   "apiName": "DA_AdaptiveHelm",
+   "name": "Adaptive Helm",
+   "composition": [
+    "DA_Component_TearOfTheGoddess",
+    "DA_Component_NegatronCloak"
+   ]
+  },
+  {
+   "apiName": "DA_BrambleVest",
+   "name": "Bramble Vest",
+   "composition": [
+    "DA_Component_ChainVest",
+    "DA_Component_ChainVest"
+   ]
+  },
+  {
+   "apiName": "DA_JeweledGauntlet",
+   "name": "Jeweled Gauntlet",
+   "composition": [
+    "DA_Component_SparringGloves",
+    "DA_Component_NeedlesslyLargeRod"
+   ]
+  },
+  {
+   "apiName": "DA_GiantSlayer",
+   "name": "Giant Slayer",
+   "composition": [
+    "DA_Component_RecurveBow",
+    "DA_Component_BFSword"
+   ]
+  },
+  {
+   "apiName": "DA_Deathblade",
+   "name": "Deathblade",
+   "composition": [
+    "DA_Component_BFSword",
+    "DA_Component_BFSword"
+   ]
+  }
+ ],
+ "setData": [
+  {
+   "number": 18,
+   "mutator": "TFTSet18",
+   "champions": [
+    {
+     "apiName": "DA_18_Sentry",
+     "name": "Pebbles"
+    },
+    {
+     "apiName": "DA_Cinderling18",
+     "name": "Cinderling"
+    },
+    {
+     "apiName": "DA_Krug18",
+     "name": "Krug"
+    },
+    {
+     "apiName": "DA_Sentinel18",
+     "name": "Sentinel"
+    },
+    {
+     "apiName": "DA_Brambleback18",
+     "name": "Brambleback"
+    },
+    {
+     "apiName": "DA_18_Ornn",
+     "name": "Ornn"
+    },
+    {
+     "apiName": "DA_Nidalee18_AP",
+     "name": "Nidalee"
+    },
+    {
+     "apiName": "DA_18_Hecarim",
+     "name": "Hecarim"
+    },
+    {
+     "apiName": "DA_18_Ezreal",
+     "name": "Ezreal"
+    },
+    {
+     "apiName": "DA_18_Azir",
+     "name": "Azir"
+    },
+    {
+     "apiName": "DA_18_Veigar",
+     "name": "Veigar"
+    },
+    {
+     "apiName": "DA_18_Maokai",
+     "name": "Maokai"
+    },
+    {
+     "apiName": "DA_18_Yorick",
+     "name": "Yorick"
+    },
+    {
+     "apiName": "DA_18_Sett",
+     "name": "Sett"
+    },
+    {
+     "apiName": "DA_18_Ahri",
+     "name": "Ahri"
+    },
+    {
+     "apiName": "DA_18_Ashe",
+     "name": "Ashe"
+    },
+    {
+     "apiName": "DA_18_Morgana",
+     "name": "Morgana"
+    },
+    {
+     "apiName": "DA_18_Lillia",
+     "name": "Lillia"
+    },
+    {
+     "apiName": "DA_18_Kobuko",
+     "name": "Kobuko"
+    },
+    {
+     "apiName": "DA_18_Teemo",
+     "name": "Teemo"
+    },
+    {
+     "apiName": "DA_18_Rammus",
+     "name": "Rammus"
+    },
+    {
+     "apiName": "DA_18_GnarSmall",
+     "name": "Gnar"
+    },
+    {
+     "apiName": "DA_18_Sivir",
+     "name": "Sivir"
+    },
+    {
+     "apiName": "DA_Vi18",
+     "name": "Vi"
+    },
+    {
+     "apiName": "DA_18_Varus",
+     "name": "Varus"
+    },
+    {
+     "apiName": "DA_Amumu18",
+     "name": "Amumu"
+    },
+    {
+     "apiName": "DA_18_Kennen",
+     "name": "Kennen"
+    },
+    {
+     "apiName": "DA_18_Aphelios",
+     "name": "Aphelios"
+    },
+    {
+     "apiName": "DA_18_Diana",
+     "name": "Diana"
+    },
+    {
+     "apiName": "DA_18_KhaZix",
+     "name": "Kha'Zix"
+    },
+    {
+     "apiName": "DA_18_Rengar",
+     "name": "Rengar"
+    },
+    {
+     "apiName": "DA_KogMaw18_AD",
+     "name": "Kog'Maw"
+    },
+    {
+     "apiName": "DA_18_Zyra",
+     "name": "Zyra"
+    },
+    {
+     "apiName": "DA_Fiddlesticks18",
+     "name": "Fiddlesticks"
+    },
+    {
+     "apiName": "DA_18_Soraka",
+     "name": "Soraka"
+    },
+    {
+     "apiName": "DA_18_Ivern",
+     "name": "Ivern"
+    },
+    {
+     "apiName": "DA_18_Alistar",
+     "name": "Alistar"
+    },
+    {
+     "apiName": "DA_Karma18",
+     "name": "Karma"
+    },
+    {
+     "apiName": "DA_18_LeBlanc",
+     "name": "LeBlanc"
+    },
+    {
+     "apiName": "DA_18_MasterYi_AD",
+     "name": "Master Yi"
+    }
+   ],
+   "traits": [
+    {
+     "apiName": "DA_18_Elderwood",
+     "name": "Elderwood"
+    },
+    {
+     "apiName": "DA_18_Slayer",
+     "name": "Ravager"
+    },
+    {
+     "apiName": "DA_18_Sprykin",
+     "name": "Sprykin"
+    },
+    {
+     "apiName": "DA_18_Adaptor",
+     "name": "Adaptor"
+    },
+    {
+     "apiName": "DA_18_Coven",
+     "name": "Coven"
+    },
+    {
+     "apiName": "DA_18_Hunter",
+     "name": "Hunter"
+    },
+    {
+     "apiName": "DA_18_Maokai_UniqueTrait",
+     "name": "Old Growth"
+    },
+    {
+     "apiName": "DA_Primal18",
+     "name": "Primal"
+    },
+    {
+     "apiName": "DA_18_Greenfather",
+     "name": "Greenfather"
+    },
+    {
+     "apiName": "DA_18_Invoker",
+     "name": "Invoker"
+    },
+    {
+     "apiName": "DA_18_Rapidfire",
+     "name": "Rapidfire"
+    },
+    {
+     "apiName": "DA_Juggernaut18",
+     "name": "Juggernaut"
+    },
+    {
+     "apiName": "DA_18_Inferno",
+     "name": "Inferno"
+    },
+    {
+     "apiName": "DA_18_Rival",
+     "name": "Rival"
+    },
+    {
+     "apiName": "DA_18_Vanguard",
+     "name": "Vanguard"
+    },
+    {
+     "apiName": "DA_18_Brawler",
+     "name": "Brawler"
+    },
+    {
+     "apiName": "DA_18_Blackthorn",
+     "name": "Blackthorn"
+    },
+    {
+     "apiName": "DA_18_Executioner",
+     "name": "Executioner"
+    },
+    {
+     "apiName": "DA_Riftbeast18",
+     "name": "Riftbeast"
+    },
+    {
+     "apiName": "DA_18_Caustic",
+     "name": "Caustic"
+    },
+    {
+     "apiName": "DA_18_Fae",
+     "name": "Fae"
+    },
+    {
+     "apiName": "DA_18_Lunar",
+     "name": "Lunar"
+    },
+    {
+     "apiName": "DA_18_Defender",
+     "name": "Defender"
+    },
+    {
+     "apiName": "DA_18_Spellweaver",
+     "name": "Spellweaver"
+    },
+    {
+     "apiName": "DA_18_ZyraUniqueTrait",
+     "name": "Thornmaiden"
+    },
+    {
+     "apiName": "DA_FloraFatalis18",
+     "name": "Flora Fatalis"
+    },
+    {
+     "apiName": "DA_18_Summoner",
+     "name": "Summoner"
+    },
+    {
+     "apiName": "DA_18_Blossom",
+     "name": "Blossom"
+    }
+   ]
+  }
+ ]
+}
