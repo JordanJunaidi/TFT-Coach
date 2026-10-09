@@ -8,7 +8,12 @@ import psycopg
 
 from tests.conftest import FIXTURES
 from tftcoach.analysis.comps import summarize_comps
-from tftcoach.analysis.queries import load_boards, load_item_components, resolve_patch
+from tftcoach.analysis.queries import (
+    load_boards,
+    load_item_components,
+    resolve_patch,
+    resolve_set,
+)
 from tftcoach.db.core import seed_patches
 from tftcoach.db.static_data import load_static_names
 from tftcoach.ingest.parse import parse_match
@@ -104,3 +109,19 @@ def test_reingest_makes_no_duplicate_calls(db: psycopg.Connection, match_payload
     second = run()
     assert (second.fetched, second.skipped) == (0, 1)
     assert calls == ["/tft/match/v1/matches/by-puuid/me/ids"]  # PUUID cached, match skipped
+
+
+def test_set_filter_excludes_previous_sets(db: psycopg.Connection, match_payload) -> None:
+    store(db, match_payload)
+    old = json.loads(json.dumps(match_payload))
+    old["metadata"]["match_id"] = "NA1_OLD"
+    old["info"]["tft_set_number"] = 17
+    old["info"]["game_datetime"] = 1_780_000_000_000  # May 2026, Set 17
+    store(db, old)
+    puuid = match_payload["info"]["participants"][0]["puuid"]
+
+    assert resolve_set(db, puuid, "current") == 18
+    assert resolve_set(db, puuid, "all") is None
+    assert resolve_set(db, puuid, "17") == 17
+    assert [b.match_id for b in load_boards(db, puuid, None, set_number=18)] == ["NA1_5656832942"]
+    assert len(load_boards(db, puuid, None, set_number=None)) == 2

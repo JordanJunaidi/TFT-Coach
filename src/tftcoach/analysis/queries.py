@@ -6,7 +6,9 @@ from tftcoach.analysis.comps import BoardTrait, BoardUnit, PlayerBoard
 from tftcoach.ingest.parse import RANKED_QUEUE_ID
 from tftcoach.ingest.store import get_cached_puuid
 
-ALL_PATCHES = "all"
+ALL = "all"
+ALL_PATCHES = ALL
+CURRENT_SET = "current"
 LATEST_PATCH = "latest"
 PREVIOUS_PATCH = "previous"
 
@@ -40,6 +42,31 @@ def played_patches(conn: psycopg.Connection, puuid: str, ranked_only: bool = Tru
     return [row[0] for row in rows]
 
 
+def resolve_set(
+    conn: psycopg.Connection, puuid: str, set_arg: str, ranked_only: bool = True
+) -> int | None:
+    """Turn "current"/"all"/"18" into a set number, or None for every set.
+
+    "current" is the newest set the player has games in, so stats never mix units and
+    traits from different sets unless asked to.
+    """
+    if set_arg == ALL:
+        return None
+    if set_arg != CURRENT_SET:
+        return int(set_arg)
+    row = conn.execute(
+        """
+        SELECT max(m.set_number)
+        FROM matches m JOIN participants pa USING (match_id)
+        WHERE pa.puuid = %(puuid)s AND (NOT %(ranked_only)s OR m.queue_id = %(ranked)s)
+        """,
+        {"puuid": puuid, "ranked_only": ranked_only, "ranked": RANKED_QUEUE_ID},
+    ).fetchone()
+    if row is None or row[0] is None:
+        raise NoDataError("No games found.")
+    return row[0]
+
+
 def resolve_patch(
     conn: psycopg.Connection, puuid: str, patch: str, ranked_only: bool = True
 ) -> str | None:
@@ -56,11 +83,16 @@ def resolve_patch(
 
 
 def load_boards(
-    conn: psycopg.Connection, puuid: str, patch: str | None, ranked_only: bool = True
+    conn: psycopg.Connection,
+    puuid: str,
+    patch: str | None,
+    ranked_only: bool = True,
+    set_number: int | None = None,
 ) -> list[PlayerBoard]:
     params = {
         "puuid": puuid,
         "patch": patch,
+        "set_number": set_number,
         "ranked_only": ranked_only,
         "ranked": RANKED_QUEUE_ID,
     }
@@ -70,6 +102,7 @@ def load_boards(
         FROM matches m JOIN participants pa USING (match_id)
         WHERE pa.puuid = %(puuid)s
           AND (%(patch)s::text IS NULL OR m.patch = %(patch)s)
+          AND (%(set_number)s::int IS NULL OR m.set_number = %(set_number)s)
           AND (NOT %(ranked_only)s OR m.queue_id = %(ranked)s)
         ORDER BY m.game_datetime DESC
         """,

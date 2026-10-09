@@ -1,18 +1,21 @@
 """CLI: personal stats.
 
-Usage: python -m tftcoach.analysis top-comps --riot-id "Name#TAG" [--patch latest|previous|all|18.3]
+Usage: python -m tftcoach.analysis top-comps --riot-id "Name#TAG"
+           [--patch latest|previous|all|18.3] [--set current|all|18]
 """
 
 import argparse
 
 from tftcoach.analysis.comps import comp_label, display_name, summarize_comps
 from tftcoach.analysis.queries import (
+    CURRENT_SET,
     LATEST_PATCH,
     load_boards,
     load_display_names,
     load_item_components,
     puuid_for_riot_id,
     resolve_patch,
+    resolve_set,
 )
 from tftcoach.config import get_settings
 from tftcoach.db.core import connect
@@ -27,7 +30,14 @@ def main(argv: list[str] | None = None) -> None:
     parser.add_argument("command", choices=["top-comps"])
     parser.add_argument("--riot-id", required=True, help='Riot ID, e.g. "Name#TAG"')
     parser.add_argument(
-        "--patch", default=LATEST_PATCH, help='"latest", "previous", "all", or e.g. "18.3"'
+        "--patch",
+        default=LATEST_PATCH,
+        help='"latest", "previous", "all" (every patch in --set), or e.g. "18.3"',
+    )
+    parser.add_argument(
+        "--set",
+        default=CURRENT_SET,
+        help='"current" (newest set you have games in), "all", or e.g. "17"',
     )
     parser.add_argument("--limit", type=int, default=5)
     parser.add_argument("--include-normals", action="store_true", help="include non-ranked games")
@@ -40,12 +50,18 @@ def main(argv: list[str] | None = None) -> None:
     ranked_only = not args.include_normals
     with connect(get_settings().database_url) as conn:
         puuid = puuid_for_riot_id(conn, game_name, tag_line)
+        set_number = resolve_set(conn, puuid, args.set, ranked_only)
         patch = resolve_patch(conn, puuid, args.patch, ranked_only)
-        boards = load_boards(conn, puuid, patch, ranked_only)
+        boards = load_boards(conn, puuid, patch, ranked_only, set_number)
         names = load_display_names(conn)
         components = load_item_components(conn)
 
-    scope = f"patch {patch}" if patch else "all patches"
+    if patch:
+        scope = f"patch {patch}"
+    elif set_number is not None:
+        scope = f"Set {set_number}, all patches"
+    else:
+        scope = "all sets"
     queue = "ranked" if ranked_only else "all queues"
     print(f"Top {args.limit} comps for {args.riot_id}, {scope} ({queue}, {len(boards)} games)\n")
     if not boards:

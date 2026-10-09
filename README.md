@@ -57,6 +57,6 @@ Ashe                     Maokai           Juggernaut           4      3.75    75
 
 Grouping by carry is the default because the tank and main trait vary between games on the same board: on real data, 33 games in one patch split into 26 trait+carry or 25 carry+tank groups, but only 17 carries.
 
-**Stats** (`--patch latest | previous | all | 18.3`) default to ranked games only. Comps with fewer than 10 games are marked as a small sample.
+**Stats** default to ranked games in your current set. `--patch latest | previous | all | 18.3` picks patches within that set; `--set 17` or `--set all` looks at other sets, since units and traits don't carry over between sets. Comps with fewer than 10 games are marked as a small sample.
 
 **What's not available:** augments (removed from the match API in Set 13) and anything round-by-round. See `docs/decisions.md`.
