@@ -85,3 +85,31 @@ CREATE TABLE IF NOT EXISTS static_names (
 );
 -- For items: the two components it is built from, used to tell carries from tanks.
 ALTER TABLE static_names ADD COLUMN IF NOT EXISTS components TEXT[];
+
+-- Patch-note retrieval (Milestone 2) -----------------------------------------
+
+CREATE EXTENSION IF NOT EXISTS vector;
+
+-- Embeddings keyed by content hash, so re-chunking or re-indexing only embeds text
+-- that actually changed.
+CREATE TABLE IF NOT EXISTS embedding_cache (
+    content_hash TEXT NOT NULL,
+    model        TEXT NOT NULL,
+    embedding    vector(768) NOT NULL,
+    PRIMARY KEY (content_hash, model)
+);
+
+-- One row per chunk. Rebuilt per patch on every index run; chunk_key ("18.4-12") is
+-- what the agent cites. 768-dim vectors with exact search: a few hundred rows don't
+-- need an ANN index.
+CREATE TABLE IF NOT EXISTS patch_chunks (
+    chunk_key    TEXT PRIMARY KEY,
+    patch        TEXT NOT NULL REFERENCES patches (patch),
+    section      TEXT NOT NULL,
+    entity       TEXT,
+    midpatch     TEXT,  -- mid-patch update heading (e.g. "OCTOBER 7TH"), NULL for main notes
+    content      TEXT NOT NULL,
+    content_hash TEXT NOT NULL,
+    embedding    vector(768) NOT NULL
+);
+CREATE INDEX IF NOT EXISTS patch_chunks_patch_idx ON patch_chunks (patch);

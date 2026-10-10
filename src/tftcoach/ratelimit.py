@@ -1,4 +1,4 @@
-"""Client-side sliding-window rate limiter, so requests stay under Riot's limits."""
+"""Client-side sliding-window rate limiter, shared by the Riot and LLM clients."""
 
 import time
 from collections import deque

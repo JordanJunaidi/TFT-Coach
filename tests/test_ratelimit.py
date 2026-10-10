@@ -1,4 +1,4 @@
-from tftcoach.riot.ratelimit import RateLimiter
+from tftcoach.ratelimit import RateLimiter
 
 
 class FakeClock:

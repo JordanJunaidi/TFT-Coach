@@ -6,7 +6,7 @@ from typing import Any
 
 import httpx
 
-from tftcoach.riot.ratelimit import RateLimiter
+from tftcoach.ratelimit import RateLimiter
 
 DEFAULT_TIMEOUT = 10.0
 MAX_RETRIES = 3

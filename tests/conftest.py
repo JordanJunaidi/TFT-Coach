@@ -14,7 +14,7 @@ MATCH_FIXTURE = FIXTURES / "match_NA1_5656832942.json"
 TEST_DATABASE_URL = os.environ.get("TEST_DATABASE_URL", "postgresql://localhost/tftcoach_test")
 
 TABLES = [
-    "units", "traits", "participants", "matches", "raw_matches",
+    "patch_chunks", "embedding_cache", "units", "traits", "participants", "matches", "raw_matches",
     "players", "patches", "static_names",
 ]  # fmt: skip
 
@@ -37,3 +37,11 @@ def db() -> Iterator[psycopg.Connection]:
         conn.execute(f"DROP TABLE IF EXISTS {', '.join(TABLES)} CASCADE")
         init_schema(conn)
         yield conn
+
+
+@pytest.fixture
+def fake_search_cutoff(monkeypatch: pytest.MonkeyPatch) -> None:
+    from tests.fakes import FAKE_MIN_SCORE
+    from tftcoach.rag import search
+
+    monkeypatch.setattr(search, "MIN_SCORE", FAKE_MIN_SCORE)
