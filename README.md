@@ -2,7 +2,7 @@
 
 A personal Teamfight Tactics coaching assistant. It ingests my TFT match history from the Riot API, compares it with high-elo games, and answers questions using retrieval over patch notes. Stats are computed in code; the LLM only explains them.
 
-> Status: Milestone 1 (match data pipeline) complete. See [`PLAN.md`](PLAN.md) for the roadmap and [`docs/decisions.md`](docs/decisions.md) for design decisions.
+> Status: Milestone 2 (patch-notes RAG + chat agent) complete. See [`PLAN.md`](PLAN.md) for the roadmap and [`docs/decisions.md`](docs/decisions.md) for design decisions.
 
 ## Setup
 
@@ -14,8 +14,11 @@ cp .env.example .env   # then set RIOT_API_KEY
 createdb tftcoach && createdb tftcoach_test   # local Postgres
 uv run python -m tftcoach.db init             # tables + patch dates
 uv run python -m tftcoach.db load-static      # display names from Community Dragon
+uv run python -m tftcoach.rag index           # chunk + embed patch_notes/ into pgvector
 uv run pytest
 ```
+
+The LLM settings in `.env` point at any OpenAI-compatible endpoint. The default is Google's Gemini free tier (key from [AI Studio](https://aistudio.google.com), no card needed): `gemini-3.1-flash-lite` for chat and `gemini-embedding-2` for embeddings.
 
 Get an API key at [developer.riotgames.com](https://developer.riotgames.com). Development keys expire every 24 hours; a registered Personal API Key does not.
 
@@ -60,3 +63,35 @@ Grouping by carry is the default because the tank and main trait vary between ga
 **Stats** default to ranked games in your current set. `--patch latest | previous | all | 18.3` picks patches within that set; `--set 17` or `--set all` looks at other sets, since units and traits don't carry over between sets. Comps with fewer than 10 games are marked as a small sample.
 
 **What's not available:** augments (removed from the match API in Set 13) and anything round-by-round. See `docs/decisions.md`.
+
+## Milestone 2: patch-notes RAG and the chat agent
+
+```bash
+uv run streamlit run src/tftcoach/ui/app.py        # chat UI at http://localhost:8501
+uv run python -m tftcoach.agent "What should I watch out for this patch?" --show-tools
+```
+
+Example (real output, abridged):
+
+> You have played 11 games with Draven as your carry, averaging a 4.82 placement with a 36.4% top-4 rate. [...] Draven now refunds 50% Mana if his axes hit 0 enemies [18.4-46]. His bleed damage was increased from 140/210 AD to 150/225 AD [18.4-46].
+>
+> *Tool calls: get_my_stats, search_patch_notes. Grounding: all 11 numbers found in tool output.*
+
+**Patch notes** (`patch_notes/*.md`) are downloaded from the official site with `python -m tftcoach.rag fetch 18.5` and converted to Markdown that keeps the page's headings and nested change lists.
+
+**Chunking** follows that structure rather than a fixed size: each changed trait, unit, or item becomes one chunk together with the designer's explanation of why it changed, so "was Juggernaut nerfed?" retrieves exactly the Juggernaut change. Flat lists (bug fixes, most mid-patch updates) stay grouped. Every chunk is tagged with its patch, section, and mid-patch update date. Cosmetics and performance sections are skipped. Four patches produce 188 chunks.
+
+**Retrieval** embeds chunks (768 dimensions) into pgvector, with an embedding cache keyed by content hash so re-indexing only embeds changed text. A query's score is cosine similarity plus a bonus when the chunk literally contains a query word (embeddings are weak at exact unit names), and weak matches are dropped, so searching for a unit that didn't change returns nothing instead of noise. Without a patch filter, older patches get a small penalty and only the newest chunk per entity is kept, so a superseded value can't be presented as current.
+
+**The agent** is a hand-written tool-calling loop (no framework) over two tools:
+- `get_my_stats(patch)`: the player's ranked comps for the current set with games, average placement, top-4 rate, and an `enough_data` flag (10+ games). It never includes other players' names or IDs.
+- `search_patch_notes(query, patch)`: chunks with citable ids like `[18.4-46]`.
+
+The loop runs up to 6 rounds; the last round withholds tools so the model must answer with what it has. Chunks already sent in the same turn aren't re-sent, which keeps the context small.
+
+**Guardrails:**
+- *Grounding check:* every number in the answer must match a number in the tool output at the answer's precision (4.82 supports "4.8"; 0.364 supports "36%"). Unmatched numbers are shown as a warning under the answer.
+- *Citation check:* cited chunk ids must have been retrieved in that turn.
+- *Small samples:* comps under 10 games are flagged, and the prompt requires "not enough data" instead of a judgment.
+
+The chat UI shows each answer's cited sources and tool calls in expanders.

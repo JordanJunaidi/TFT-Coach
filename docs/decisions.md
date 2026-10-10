@@ -65,6 +65,42 @@ One short entry per notable decision: what, why, and what I'd revisit.
 
 ## 2026-10-09: Gemini free tier for the LLM and embeddings, behind an OpenAI-compatible interface
 
-**Decision:** Use `gemini-3.8-flash` for chat/tool calling and `gemini-embedding-2` for embeddings, both through Gemini's OpenAI-compatible endpoint. Provider, key, and model names come from `LLM_BASE_URL`, `LLM_API_KEY`, `LLM_MODEL`, and `EMBEDDING_MODEL`.
+**Decision:** Use a Gemini Flash model for chat/tool calling (see the next entry for which) and `gemini-embedding-2` for embeddings, both through Gemini's OpenAI-compatible endpoint. Provider, key, and model names come from `LLM_BASE_URL`, `LLM_API_KEY`, `LLM_MODEL`, and `EMBEDDING_MODEL`.
 **Why:** The free tier needs no card and covers both tool calling and embeddings, so one key serves the whole LLM layer. Meta's Muse Spark (Contributor tier) was the first choice but requires billing setup. Because both providers speak the OpenAI Chat Completions format, switching is a `.env` change, not a code change. The model is pinned rather than `-latest` so eval results stay reproducible.
 **Trade-off:** On free/Contributor tiers the provider may use prompts for training. Tools therefore send only the user's aggregated stats and public patch notes, never other players' names or PUUIDs.
+
+## 2026-10-09: Default chat model is gemini-3.1-flash-lite
+
+**Decision:** Default `LLM_MODEL` to `gemini-3.1-flash-lite` instead of `gemini-3.8-flash`.
+**Why:** The free tier allows only 20 requests per day for `gemini-3.8-flash`, and one coaching question takes 3-6 requests, so the quota ran out during development. Its responses also took 10-250 s per round. On the same question, Flash-Lite answered in about 6 s total, called the right tools (stats, then one search per carry), cited the right chunks, and every number passed the grounding check. Quotas are per model, so the bigger model is a one-line `.env` change for comparison in Milestone 5.
+**Also:** The HTTP client now gives up immediately when the server's requested retry delay exceeds 60 s (a daily quota said "retry in 85045s"), instead of retrying for minutes.
+
+## 2026-10-09: Entity-level chunks instead of whole sections
+
+**Decision:** Each changed trait/unit/item (a top-level bullet with its nested changes) is its own chunk, with the designer's "Name: why" paragraph attached. Flat lists stay grouped and are split only when long.
+**Why:** A section like Traits covers about 10 traits. Retrieving the whole section for "was Juggernaut nerfed?" fills the context with unrelated changes and invites the model to mix values between traits. Entity chunks make each citation point at exactly one change. Milestone 5 compares this against section and fixed-size chunking.
+
+## 2026-10-09: Hybrid scoring with a cutoff
+
+**Decision:** Score = cosine similarity + 0.10 if the chunk contains a query word; drop results under 0.65.
+**Why:** Bare unit names embed poorly. "Maokai" (not in the 18.4 notes) matched unrelated chunks at 0.63 while the real Juggernaut chunk scored 0.67. The lexical bonus lifts exact-name matches, and the cutoff means a search for an unchanged unit returns nothing. The empty result tells the model "no changes" ("There were no patch note changes for Morgana") instead of handing it irrelevant text to misread. The constants are hand-tuned on spot checks and are a Milestone 5 experiment.
+
+## 2026-10-09: Newest-wins re-ranking
+
+**Decision:** Without a patch filter, scores lose 0.03 per patch of age, and if an entity appears in several patches only its newest chunk is kept.
+**Why:** If a value changed in 18.2 and again in 18.4, returning both invites the model to quote the stale one. Asking about a specific patch filters instead, so history is still reachable.
+
+## 2026-10-09: Grounding check by number matching
+
+**Decision:** Extract every number from the answer and require a number in the tool output (or question/system prompt) that rounds to it at the answer's precision; also accept fraction-to-percent. Star levels, "top 4", and lobby size are always allowed. Citation ids are ignored.
+**Why:** It's the CLAUDE.md rule made testable, and cheap enough to run on every answer. Answers aren't blocked, because false positives are possible; the UI shows a warning instead, and Milestone 5 measures how often it fires. The prompt also forbids computing differences ("quote old ⇒ new values"), because derived numbers can't be verified this way.
+
+## 2026-10-09: Agent loop details
+
+**Decision:** Hand-written loop, max 6 rounds, last round sent without tools; chunks already shown in a turn are replaced with "already shown above"; assistant messages are appended back unchanged.
+**Why:** The first live run made 15 tool calls, grew the context to tens of thousands of tokens (one round took 175 s), and hit the round limit without answering. Withholding tools on the final round guarantees an answer, and not resending chunks keeps context small. Gemini attaches signatures to tool calls that must be sent back verbatim, so replies aren't rebuilt.
+
+## 2026-10-09: Default stats scope is the whole set
+
+**Decision:** The tool description and system prompt tell the model to use patch "all" (every patch of the current set) for "how am I doing" questions unless a patch is named.
+**Why:** Asked about Draven "this set", the model first fetched only the latest patch (1 game, "not enough data") although the set had 11 games. Per-patch samples are usually under the 10-game threshold.

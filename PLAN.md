@@ -23,11 +23,11 @@ Work through these in order. Each milestone ends with something working and demo
 
 ## Milestone 2: patch-notes RAG + first end-to-end version
 
-- [ ] Store patch notes for the last 3–4 patches as text files tagged by patch number (I'll provide or point to sources)
-- [ ] Chunk by section (trait / unit / augment / system), embed, store with patch metadata
-- [ ] Retrieval that filters or boosts by patch so newest wins
-- [ ] Tool-calling agent with `get_my_stats(patch)` and `search_patch_notes(query, patch)`
-- [ ] Streamlit chat UI
+- [x] Store patch notes for the last 3–4 patches as text files tagged by patch number (I'll provide or point to sources)
+- [x] Chunk by section (trait / unit / augment / system), embed, store with patch metadata
+- [x] Retrieval that filters or boosts by patch so newest wins
+- [x] Tool-calling agent with `get_my_stats(patch)` and `search_patch_notes(query, patch)`
+- [x] Streamlit chat UI
 
 **Done when:** asking "what should I watch out for this patch?" returns an answer grounded in my match stats and cited patch-note chunks.
 
